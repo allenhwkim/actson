@@ -1,0 +1,10 @@
+body {
+  min-width: 600px
+}
+#log  {
+  width: 100%;
+  min-height: 200px;
+}
+#enable-disable {
+  float: right;
+}

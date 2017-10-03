@@ -1,0 +1,54 @@
+{
+  // chrome extension manifest version
+  "manifest_version": 2,
+
+  "name": "ActSon",
+  "description": "Get Browsers Actions As JSON Object",
+
+  // this extension version
+  "version": "0.1", 
+
+  // icons used 
+  "icons": {
+    "128": "images/icon128.png",
+    "48": "images/icon48.png",
+    "16": "images/icon16.png"
+  },
+ 
+  // Use browser actions to put icons in the main Google Chrome toolbar, 
+  // to the right of the address bar. In addition to its icon, a browser 
+  // action can also have a tooltip, a badge, and a popup. 
+  "browser_action": {
+    "default_popup": "browser-action/popup.html"
+  },
+
+  // A common need for apps and extensions is to have a single long-running
+  // script to manage some task or state. Event pages to the rescue. Event
+  // pages are loaded only when they are needed. When the event page is not
+  // actively doing something, it is unloaded, freeing memory and resources.
+  // e.g. when contextMenu is clicked, a storage item is updated
+  "background": {
+    "scripts": ["background/eventPage.js"],
+    "persistent": false
+  },
+
+  "content_scripts":[
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "vendor/css-selector-generator.js",
+        "content-scripts/content.js"
+      ],
+      "css": ["content-scripts/content.css"]
+    }
+  ],
+
+  // options page of this extension
+  "options_page": "options-page/options.html",
+
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ]
+
+}
