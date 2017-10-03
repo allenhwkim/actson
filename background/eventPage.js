@@ -26,18 +26,27 @@ var contextMenus = [
   { id: 'switch-to', title: 'switch to <iframe>', contexts: ['frame']}
 ];
 
+var defaultOptions = {
+  enabled: true
+};
+
 chrome.runtime.onMessage.addListener(messageHandler);            // when message received
-
-contextMenus.forEach(ctxMenu => chrome.contextMenus.create(ctxMenu) );
 chrome.contextMenus.onClicked.addListener(menuItemClickHandler); // when contextmenu clicked
-chrome.storage.onChanged.addListener(storageChangedHandler);    // wnen storage changed
+chrome.tabs.onActivated.addListener(broadcastOptions);
+chrome.storage.onChanged.addListener(storageChangedHandler);
 
+broadcastOptions(); // run once when starts
 
 function messageHandler(request, sender, sendResponse){
-  console.log('background page received a message', request);
+  console.log('background page : received a message', request);
+
+  // webpage -> background
   if (request.type === 'webpage-contextmenu') {     // webpage contextmenu clicked
     elementClicked = request.data;
-  } else if (request.type === 'enable-extension') { // enable/disable command from popup
+  } 
+
+  // popup -> background
+  else if (request.type === 'enable-extension') { // enable/disable command from popup
     if (request.data === true) { // enable
       contextMenus.forEach(ctxMenu => chrome.contextMenus.create(ctxMenu) );
     } else { // disable
@@ -46,13 +55,50 @@ function messageHandler(request, sender, sendResponse){
   }
 }
 
-function storageChangedHandler(changes, storageName){
-  console.log('background page notified that the storage data is changed', changes);
-  //chrome.browserAction.setBadgeText({"text": changes.total.newValue.toString()});
-}
-
 function menuItemClickHandler(clickData) {
   // do something for tag input, textarea, select, button with type and value
   console.log('menuItem is clicked', clickData.menuItemId, elementClicked, ' and sending message');
   chrome.runtime.sendMessage({type: 'menuitem-clicked', data: clickData});
+}
+
+function addAction(action) {
+  chrome.storage.sync.get('actions', function(result) {
+    var actions = result.actions || [];
+    actions.push(action);
+    chrome.storage.sync.set({actions: actions}, function() {
+      console.log("Saved a new action to storage");
+    });
+  }); 
+}
+
+// when tab is changed, chek if extension is enabled or not, and send message to the tab
+function broadcastOptions(obj) {
+  console.log('background:  detected tab change', obj);
+  chrome.storage.sync.get('options', function(result) {
+    var options = result.options;
+    if (!options) {
+      options = defaultOptions;
+      chrome.storage.sync.set({options: options});
+    }
+    let message = {type: 'options-changed', data: options};
+    chrome.runtime.sendMessage(message);
+    obj && chrome.tabs.sendMessage(obj.tabId, message);
+  });
+}
+
+// when storage is changed, send message to active tab
+function storageChangedHandler(changes, storageName){
+  console.log('background page : notified that the storage data is changed', changes);
+
+  if (changes.options.newValue) {
+    let message = {type: 'options-changed', data: changes.options.newValue};
+    chrome.runtime.sendMessage(message);
+    chrome.tabs.query({ active: true, currentWindow: true}, function(tabs) { // send message to active tab
+      chrome.tabs.sendMessage(tabs[0].id, message);
+    });
+  }
+
+  if (changes.options.newValue) {
+    // TODO 
+  }
 }

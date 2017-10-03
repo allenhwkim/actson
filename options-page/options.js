@@ -3,17 +3,11 @@ function log(msg) {
   el.innerHTML = el.innerHTML + msg+"\n";
 }
 
-// get from storage
-document.querySelector('#get-from-storage').addEventListener('click', function(event) {
-  chrome.storage.sync.get('test',function(data){
-    log('options page received from storage. ' + JSON.stringify(data));
-  });
+chrome.storage.sync.get('options', function(result) {
+  var options = result.options;
+  // TODO update UI
 });
 
-// save to storage
-document.querySelector('#save-to-storage').addEventListener('click', function(event) {
-  let data = {test: 2};
-  chrome.storage.sync.set(data);
-  log('options page saving to storage ' + JSON.stringify(data));
-});
-
+function updateOption(options) {
+  chrome.storage.sync.set({options: options});
+};

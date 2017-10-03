@@ -4,12 +4,21 @@
   document.body.addEventListener('contextmenu', contextMenuHandler);
   chrome.runtime.onMessage.removeListener(messageHandler);
 
-  // haneld message
+  // handle message
   function messageHandler(request, sender, sendResponse) {
     console.log('web page received a message', request);
+
+    // popup -> webpage
     if (request.type === 'enable-extension') {
-      let funcName = request.data === true ? 'addEvnetListener' : 'removeEventListener';
-      document.body[funcName]('contextmenu', contextMenuHandler);
+      if (request.data) {
+        document.body.addEventListener('contextmenu', contextMenuHandler);
+      } else {
+        document.body.removeEventListener('contextmenu', contextMenuHandler);
+      }
+    }
+    
+    if (changes.options.newValue) {
+      // TODO 
     }
   }
 

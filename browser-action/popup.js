@@ -1,50 +1,48 @@
-var extensionEnabled = true; // TODO, this has to be from storage!!!!
+var enableExtEl = document.querySelector('#enable-disable');
+var options; // updated from storage
 
-// send message to tab
-document.querySelector('#send-message-to-active-tab').addEventListener('click', function(event) {
-  let message = {type: 'perform-action', data: {}};
-  sendMessageToActiveTab(message);
-});
-
-// receive a message
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  log('popup received a message' + JSON.stringify(request));
-});
-
-// read from storage
-document.querySelector('#read-from-storage').addEventListener('click', function(event) {
-  chrome.storage.sync.get('test', function(data) {
-    log('get data from storage' + JSON.stringify(data));
-  });
-});
-
-// write to storage
-document.querySelector('#write-to-storage').addEventListener('click', function(event) {
-  let num=0; data = {test: num++};
-  chrome.storage.sync.set(data, function() {  
-    log('saved data to storage' + JSON.stringify(data));
-  });
-});
-
-// enable / disable
-document.querySelector('#enable-disable').addEventListener('click', function(event) {
-  extensionEnabled = !extensionEnabled;
-  event.target.innerHTML = extensionEnabled ? 'Disable' : 'Enable';
-  let message = {type: 'enable-extension', data: extensionEnabled};
-  sendMessageToActiveTab(message);
-  chrome.runtime.sendMessage(message);
-});
-
-function log(msg) {
+var log = function(msg) {
   let el = document.querySelector('#log');
   el.innerHTML = el.innerHTML + msg+"\n";
+};
+
+chrome.runtime.onMessage.addListener(messageHandler);
+chrome.storage.onChanged.addListener(storageChangedHandler);
+window.onload = init;
+
+enableExtEl.addEventListener('click', function(event) {
+  options.enabled = !options.enabled;
+  console.log('>>>>>>>>>>> updating storage', options);
+  chrome.storage.sync.set({options: options});
+});
+
+
+function init() {
+  chrome.storage.sync.get('options', function(result) {
+    options = result.options;
+  });
 }
 
-// send message to tab
-function sendMessageToActiveTab(message) {
-  chrome.tabs.query({ active: true, currentWindow: true}, function(tabs) {
-    let tabId = tabs[0].id;
-    chrome.tabs.sendMessage(tabId, message);
-    log('popup is sending message' + JSON.stringify(message) + 'to active tab, ' + tabId);
-  });
+// when storage data (enabled / actions) changed, update UI
+function storageChangedHandler(changes, storageName){
+  console.log('popup page : noticed that the storage data is changed', changes);
+
+  if (changes.options.newValue) {
+    options = changes.options.newValue;
+    applyOptions();
+  }
+
+  if (changed.actions && changes.actions.newValue) {
+    chrome.browserAction.setBadgeText({"text": changes.actions.newValue.length});
+  }
+}
+
+function applyOptions() {
+  enableExtEl.innerHTML = options.enabled ? 'Disable' : 'Enable';
+}
+
+function messageHandler(request, sender, sendResponse){
+  log('popup received a message' + JSON.stringify(request));
+
+  // nada for now
 }
