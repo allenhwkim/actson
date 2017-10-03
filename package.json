@@ -1,0 +1,20 @@
+{
+  "name": "actson",
+  "version": "0.1.0",
+  "description": "Chrome extension to collect browser actions to JSON",
+  "main": "manifest.json",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/allenhwkim/actson"
+  },
+  "keywords": [
+    "chrome",
+    "extension",
+    "json"
+  ],
+  "author": "Allen Kim",
+  "license": "MIT"
+}
