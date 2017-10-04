@@ -13,6 +13,7 @@ enableExtEl.addEventListener('click', function(event) {
   options.enabled = !options.enabled;
   chrome.storage.sync.set({options: options});
   applyOptions();
+  close();
 });
 
 
