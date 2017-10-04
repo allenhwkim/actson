@@ -28,7 +28,9 @@
   // actively doing something, it is unloaded, freeing memory and resources.
   // e.g. when contextMenu is clicked, a storage item is updated
   "background": {
-    "scripts": ["background/eventPage.js"],
+    "scripts": [
+      "background/eventPage.js"
+    ],
     "persistent": false
   },
 

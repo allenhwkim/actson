@@ -2,23 +2,19 @@
   var cssSelector = new CssSelectorGenerator();
 
   document.body.addEventListener('contextmenu', contextMenuHandler);
-  chrome.runtime.onMessage.removeListener(messageHandler);
+  chrome.runtime.onMessage.addListener(messageHandler);
 
   // handle message
   function messageHandler(request, sender, sendResponse) {
     console.log('web page received a message', request);
 
     // popup -> webpage
-    if (request.type === 'enable-extension') {
-      if (request.data) {
+    if (request.type === 'options-changed') {
+      if (request.data.enabled) {
         document.body.addEventListener('contextmenu', contextMenuHandler);
       } else {
         document.body.removeEventListener('contextmenu', contextMenuHandler);
       }
-    }
-    
-    if (changes.options.newValue) {
-      // TODO 
     }
   }
 
@@ -34,7 +30,18 @@
         value: event.target.value
       }
     };
-    chrome.runtime.sendMessage(message);
+    try {
+      chrome.runtime.sendMessage(message);
+    } catch(e) {
+      if (
+        e.message.match(/Invocation of form runtime\.connect/) && 
+        e.message.match(/doesn't match definition runtime\.connect/)
+      ) {
+        console.error('Chrome extension, Actson has been reloaded. Please refersh the page'); 
+      } else {
+        throw(e);
+      }
+    }
     console.log('webpage sent a messagse', message);
   }
 
