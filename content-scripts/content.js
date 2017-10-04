@@ -9,7 +9,7 @@
     console.log('web page received a message', request);
 
     // popup -> webpage
-    if (request.type === 'options-changed') {
+    if (request.type === 'storage-options-changed') {
       if (request.data.enabled) {
         document.body.addEventListener('contextmenu', contextMenuHandler);
       } else {
@@ -42,7 +42,7 @@
         throw(e);
       }
     }
-    console.log('webpage sent a messagse', message);
+    // console.log('webpage sent a messagse', message);
   }
 
 })();

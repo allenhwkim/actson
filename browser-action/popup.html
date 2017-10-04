@@ -3,13 +3,25 @@
   <head>
     <title>ActSon</title>
     <link rel="stylesheet" href="popup.css" />
+    <script src="/vendor/Sortable.min.js"></script>
   </head>
   <body>
-    <button id="clear-actions">Clear</button>
+    <button id="clear-actions" tabindex="-1">Remove All Actions</button>
+    <button id="close">X</button>
     <button id="enable-disable">Disable</button>
     <hr/>
-    <textarea id="log"></textarea>
-
+    <div id="actions-table">
+      <header>
+        <div class="command">Command</div>
+        <div class="target">Target</div>
+        <div class="value">Value</div>
+      </header>
+      <section></section>
+      <footer>
+        <button id="export-as-json">Export As JSON</button>
+        <a id="hidden-link-for-export">export</a>
+      </footer>
+    </div>
     <script src="/browser-action/popup.js"></script>
   </body>
 </html>

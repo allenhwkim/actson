@@ -1,10 +1,43 @@
 body {
-  min-width: 600px
+  min-width: 600px;
+  margin: 20px;
 }
+
+body * {
+  box-sizing: border-box;
+}
+
 #log  {
   width: 100%;
-  min-height: 200px;
+  border: 1px solid #ccc;
+  display: none;
 }
-#enable-disable {
+
+#enable-disable, #close {
   float: right;
+}
+
+#actions-table header *,
+#actions-table .actions .action * {
+  display: inline-block;
+  width: 32%;
+  padding: 5px 3px;
+  vertical-align: top;
+}
+#actions-table .actions .action:nth-child(even) {
+  background-color: #eee;
+}
+
+#actions-table header * {
+  background-color: #ccc;
+  color: #fff;
+  text-align: center;
+}
+
+#actions-table footer {
+  text-align: center;
+}
+
+#actions-table footer #hidden-link-for-export {
+  display: none;
 }
